@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# practice folder
+practice/
+
+# minio volume storage
+.storage
