@@ -22,12 +22,6 @@ jobs:
       - name: List containers
         run: docker ps
 
-  check-containers:
-    name: Test containers healthy
-    runs-on: ubuntu-latest
-    needs:
-      - build
-    steps:
       - name: Check minio status
         run: '[[ $(docker inspect  minio-raw --format="{{.State.Health.Status}}") == "healthy" ]] && exit 0 || exit 1'
 
