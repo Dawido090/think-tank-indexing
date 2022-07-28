@@ -18,6 +18,9 @@ jobs:
 
       - name: Wait for container to be running
         run: sleep 60
+        
+      - name: List containers
+        run: docker ps
 
   check-containers:
     name: Test containers healthy
