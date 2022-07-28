@@ -6,6 +6,7 @@ jobs:
     name: Build containers
     runs-on: ubuntu-latest
     steps:
+      - name: Who run flow? 
         run: Flow started by ${{ github.actor }}
 
       - name: Checkout
