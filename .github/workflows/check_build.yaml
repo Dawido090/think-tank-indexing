@@ -7,7 +7,7 @@ jobs:
     name: Build containers
     runs-on: Ubuntu-latest
     steps:
-      - name: Flow started by ${{ github.actor }}
+        run: Flow started by ${{ github.actor }}
 
       - name: Checkout
         uses: actions/checkout@v3
