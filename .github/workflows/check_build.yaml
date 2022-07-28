@@ -3,9 +3,8 @@ name: Test and build containers
 
 jobs:
   build:
-
     name: Build containers
-    runs-on: Ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
         run: Flow started by ${{ github.actor }}
 
@@ -21,7 +20,7 @@ jobs:
 
   check-containers:
     name: Test containers healthy
-    runs-on: Ubuntu-latest
+    runs-on: ubuntu-latest
     needs:
       - build
     steps:
