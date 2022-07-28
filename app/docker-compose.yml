@@ -76,15 +76,3 @@ volumes:
 
 networks:
   esnet:  
-
-
-
-#  elastic:
-#     image: "python"
-#  kibana:
-#     image: "python"
-#  airflow:
-#     image: "python"
-
-# volumes:
-#   minio:
