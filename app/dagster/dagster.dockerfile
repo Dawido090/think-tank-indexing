@@ -5,11 +5,7 @@ WORKDIR /usr/src/app
 ENV DAGSTER_HOME=/usr/src/app
 
 # Install dependencies
-COPY ./requirements.txt .
+COPY . .
 RUN pip install -r requirements.txt
-
-# Copy source code
-COPY ./dagster.yaml .
-COPY  ./src .
 
 CMD ["dagit", "-w", "workspace.yaml", "-h", "0.0.0.0", "-p", "3000"]

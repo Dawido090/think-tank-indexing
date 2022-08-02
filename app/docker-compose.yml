@@ -68,11 +68,37 @@ services:
     depends_on:
       - elasticsearch
     restart: "unless-stopped"
-    
+  dagster-postgres:
+    image: postgres:13.3
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=secret
+    # volumes:
+    #   - dagster-postgres:/var/lib/postgresql/data
+  dagster-dagit:
+    build:
+      context: "./dagster"
+      dockerfile: "dagster.dockerfile"
+    container_name: dagster-dagit
+    ports:
+      - 3000:3000
+    environment:
+      - PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+  dagster-daemon:
+    build:
+      context: "./dagster"
+      dockerfile: "dagster.dockerfile"
+    container_name: dagster-daemon
+    command: "dagster-daemon run"
+    environment:
+      - PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+
 volumes:
   elk:
     driver: local
   minio:
+  # dagster-postgres:
 
 networks:
   esnet:  
