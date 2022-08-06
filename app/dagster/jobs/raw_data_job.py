@@ -3,7 +3,9 @@ from requests_html import HTMLSession
 from minio import Minio, error
 import datetime
 import time
-
+import os
+import json
+import shutil
 
 @op
 def get_blogs():
@@ -63,13 +65,6 @@ def get_data(list_of_links):
     return result
 
 
-# @op
-# def joined_content(filtered_body):
-#     # joining content of article
-#     joined_content = '\n'.join(filtered_body)
-#     get_dagster_logger().info(joined_content)
-
-@op
 def get_minio_client():
     Client = Minio(
         'localhost:9000',
@@ -79,7 +74,6 @@ def get_minio_client():
     )
     return Client
 
-@op
 def check_minio_connection(client):
     try:
         if not client.bucket_exists("nonexistingbucket"):
@@ -87,7 +81,7 @@ def check_minio_connection(client):
             return True
     except:
         # raise error if storage not reachable
-        get_dagster_logger().info("Object storage not reachable")
+        get_dagster_logger().error("Object storage not reachable")
         return False
 
 @op
@@ -95,16 +89,42 @@ def insert_to_minio(client, conf_attr, data):
     client.put_object(bucket_name=conf_attr[0],object_name=conf_attr[1],data=data,length=-1)
     get_dagster_logger().info(f"Object {conf_attr[0]}, inserted to {conf_attr[1]}")
 
-@op
-def minio_basic_conf():
-    return ['articles-raw-data','test123.txt']
 
+@op
+def create_jsons(data):
+    os.makedirs('article_jsons',exist_ok = True)
+    for file_data in data:
+        file_name = 'article_jsons/' + file_data['link'].split('/')[-1] +'.json'
+        with open(file_name,mode ='w', encoding ='utf8') as json_file:
+            # file.write(json.dump(file))
+            json.dump(file_data, json_file, ensure_ascii = False,default=str)
+
+
+@op
+def to_minio(content):
+    client = get_minio_client()
+    if check_minio_connection(client) == False:
+        get_dagster_logger().error('Minio is down!')
+    else:
+        client.bucket_exists('articles-raw-data')
+        if client.bucket_exists('articles-raw-data') == False:
+           client.make_bucket('articles-raw-data') 
+        os.chdir('article_jsons')
+        get_dagster_logger().info([x for x in os.listdir('article_jsons')])
+        for file in os.listdir():
+            client.fput_object('articles-raw-data',object_name = file,file_path=file)
+    # os.chdir('/')
+    # think how to remove file content
+    # shutil.rmtree('article_jsons')
+        
 
 @job(resource_defs={"io_manager": mem_io_manager}, executor_def=in_process_executor)
 def collect_articles_job():
     blogs = get_blogs()
     links = get_links(blogs)
     data = get_data(links)
+    json_files = create_jsons(data)
+    to_minio(json_files)
     # joined = joined_content(data)
     # client = get_minio_client()
     # conf_list = minio_basic_conf()
