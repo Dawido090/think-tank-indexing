@@ -67,7 +67,7 @@ def get_data(list_of_links):
 
 def get_minio_client():
     Client = Minio(
-        'localhost:9000',
+        'minio-raw:9000',
         access_key='minioadmin',
         secret_key='minioadmin',
         secure = False
@@ -109,13 +109,14 @@ def to_minio(content):
         client.bucket_exists('articles-raw-data')
         if client.bucket_exists('articles-raw-data') == False:
            client.make_bucket('articles-raw-data') 
+        get_dagster_logger().info(os.getcwd() + '1')
         os.chdir('article_jsons')
-        get_dagster_logger().info([x for x in os.listdir('article_jsons')])
+        get_dagster_logger().info(os.getcwd() + '2')
+        get_dagster_logger().info([x for x in os.listdir()])
+        time.sleep(5)
         for file in os.listdir():
             client.fput_object('articles-raw-data',object_name = file,file_path=file)
-    # os.chdir('/')
-    # think how to remove file content
-    # shutil.rmtree('article_jsons')
+        # add mechanism to check minio content to avoid replication
         
 
 @job(resource_defs={"io_manager": mem_io_manager}, executor_def=in_process_executor)

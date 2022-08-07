@@ -5,6 +5,5 @@ from schedules.raw_data_scheduler import every_weekday_9am
 
 
 @repository
-def hello_cereal_repository():
-    """Collection of cereal jobs and other definitions used by Dagster."""
+def collect_store_articles():
     return [collect_articles_job, every_weekday_9am]
