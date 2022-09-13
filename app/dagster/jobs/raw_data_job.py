@@ -12,7 +12,9 @@ import re
 @op
 def get_blogs():
     # think about multi blogs loop
-    blogs = ['https://www.cfr.org/blog/asia-unbound']
+    blogs = ['https://www.cfr.org/blog/asia-unbound',
+            'https://www.cfr.org/blog/africa-transition'
+    ]
     get_dagster_logger().info(blogs)
     return blogs
 
@@ -106,6 +108,7 @@ def check_minio_connection(client):
         get_dagster_logger().error("Object storage not reachable")
         return False
 
+# to be removed
 @op
 def insert_to_minio(client, conf_attr, data):
     client.put_object(bucket_name=conf_attr[0],object_name=conf_attr[1],data=data,length=-1)
@@ -128,9 +131,9 @@ def to_minio(content):
     if check_minio_connection(client) == False:
         get_dagster_logger().error('Minio is down!')
     else:
-        client.bucket_exists('articles-raw-data')
-        if client.bucket_exists('articles-raw-data') == False:
-           client.make_bucket('articles-raw-data') 
+        client.bucket_exists('articles')
+        if client.bucket_exists('articles') == False:
+           client.make_bucket('articles') 
         # get_dagster_logger().info(os.getcwd() + '1')
         os.chdir('article_jsons')
         # get_dagster_logger().info(os.getcwd() + '2')
@@ -138,9 +141,11 @@ def to_minio(content):
         # time.sleep(5)
         count_of_files_added = 0
         for file in os.listdir():
-            client.fput_object('articles-raw-data',object_name = file,file_path=file)
+            client.fput_object('articles',object_name = 'raw-data/' + file,file_path=file)
             count_of_files_added += 1
-        get_dagster_logger().info(f'{count_of_files_added} files added')
+        get_dagster_logger().info(f'{count_of_files_added} files added to raw-data')
+        for file in os.listdir():
+            os.remove(file)
         
         # add mechanism to check minio content to avoid replication
         
