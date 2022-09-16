@@ -8,6 +8,7 @@ import json
 import shutil
 import requests
 import re
+import io
 
 @op
 def get_blogs():
@@ -19,13 +20,32 @@ def get_blogs():
     return blogs
 
 @op
-def get_links(blogs):
-    # check in future
+def get_already_in_raw():
+    client = get_minio_client()
+    if check_minio_connection(client) == False:
+        get_dagster_logger().error('Minio is down!')
+    if client.bucket_exists("articles") == False:
+        return None
+    possible_list = [x.object_name.strip('.json').split('/')[1] for x in client.list_objects("articles",prefix = "raw-data/")]
+    get_dagster_logger().info('\t'.join([x for x in possible_list]))
+    if possible_list == 0:
+        return None
+    elif len(possible_list) >= 1:
+        return possible_list
+    
+
+
+@op
+def get_links(blogs, already_in_raw):
+    # check creds in future
     for blog in blogs:
         base_page = blog
         result = []
         querystring = {"_wrapper_format":"drupal_ajax"}
-        for page_num in range(1,4):
+        # implement stop of program after certain time if isn't able to find new data in future
+        flag = True
+        page_num = 1
+        while (len(result) < 14) and (flag == True):
             headers = {
                 "authority": "www.cfr.org",
                 "accept": "application/json, text/javascript, */*; q=0.01",
@@ -39,15 +59,22 @@ def get_links(blogs):
             }
 
             response = requests.request("GET", base_page, headers=headers, params=querystring)
-
+            get_dagster_logger().info('\t'.join([x for x in already_in_raw]))
             data = response.json()[4]['data']
-            find_links = ["https://www.cfr.org" + x.strip() for x in re.findall(r'(?<=<a href=")(.*)(?=" class="card-article-large__link">)',data)]
+            find_links = list(set([x.strip() for x in re.findall(r'(?<=<a href=")(.*)(?=" class="card-article-large__link">)',data)]))
+            get_dagster_logger().info('\t'.join([x for x in find_links]))
+            if already_in_raw != None:
+                find_links_filtered = ["https://www.cfr.org" + x for x in find_links if x.split('/')[-1] not in already_in_raw]
+            elif already_in_raw == None:
+                find_links_filtered = ["https://www.cfr.org" + x for x in find_links]
+            get_dagster_logger().info('\t'.join([x for x in find_links_filtered]))
             
-            result.extend(find_links)
-            
+            result.extend(find_links_filtered)
+            page_num += 1
     get_dagster_logger().info('\t'.join([x for x in result]))
-
     return result
+
+
 @op
 def get_data(list_of_links):
     # collect raw data from portal
@@ -108,25 +135,9 @@ def check_minio_connection(client):
         get_dagster_logger().error("Object storage not reachable")
         return False
 
-# to be removed
-@op
-def insert_to_minio(client, conf_attr, data):
-    client.put_object(bucket_name=conf_attr[0],object_name=conf_attr[1],data=data,length=-1)
-    get_dagster_logger().info(f"Object {conf_attr[0]}, inserted to {conf_attr[1]}")
-
 
 @op
-def create_jsons(data):
-    os.makedirs('article_jsons',exist_ok = True)
-    for file_data in data:
-        file_name = 'article_jsons/' + file_data['link'].split('/')[-1] +'.json'
-        with open(file_name,mode ='w', encoding ='utf8') as json_file:
-            # file.write(json.dump(file))
-            json.dump(file_data, json_file, ensure_ascii = False,default=str)
-
-
-@op
-def to_minio(content):
+def to_minio(data):
     client = get_minio_client()
     if check_minio_connection(client) == False:
         get_dagster_logger().error('Minio is down!')
@@ -134,33 +145,21 @@ def to_minio(content):
         client.bucket_exists('articles')
         if client.bucket_exists('articles') == False:
            client.make_bucket('articles') 
-        # get_dagster_logger().info(os.getcwd() + '1')
-        os.chdir('article_jsons')
-        # get_dagster_logger().info(os.getcwd() + '2')
-        # get_dagster_logger().info([x for x in os.listdir()])
-        # time.sleep(5)
-        count_of_files_added = 0
-        for file in os.listdir():
-            client.fput_object('articles',object_name = 'raw-data/' + file,file_path=file)
-            count_of_files_added += 1
-        get_dagster_logger().info(f'{count_of_files_added} files added to raw-data')
-        for file in os.listdir():
-            os.remove(file)
-        
+        for count_of_files_added, file in enumerate(data):
+            file_name = 'raw-data/'+ file['link'].split('/')[-1] +'.json'
+            # client.fput_object('articles',object_name = 'raw-data/' + file,file_path=file)
+            client.put_object('articles',file_name, data = io.BytesIO(str(file).encode()),length=len(str(file).encode()))
+        get_dagster_logger().info(f'{count_of_files_added +1} files added to raw-data')
         # add mechanism to check minio content to avoid replication
         
 
 @job(resource_defs={"io_manager": mem_io_manager}, executor_def=in_process_executor)
 def collect_articles_job():
+    already_in_raw_data = get_already_in_raw()
     blogs = get_blogs()
-    links = get_links(blogs)
+    links = get_links(blogs,already_in_raw_data)
     data = get_data(links)
-    json_files = create_jsons(data)
-    to_minio(json_files)
-    # joined = joined_content(data)
-    # client = get_minio_client()
-    # conf_list = minio_basic_conf()
-    # # if check_minio_connection(client) == True:
-    # insert_to_minio(client=client,conf_attr=conf_list,data=joined)
+    to_minio(data)
+
 
 
