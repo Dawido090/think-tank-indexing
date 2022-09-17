@@ -44,7 +44,7 @@ def get_links(blogs, already_in_raw):
         # implement stop of program after certain time if isn't able to find new data in future
         flag = True
         page_num = 1
-        while (len(result) >= 30) and (flag == True):
+        while (len(result) <= 30) and (flag == True):
             headers ={
                     "accept": "application/json, text/javascript, */*; q=0.01",
                     "accept-language": "en-GB,en;q=0.9,pl;q=0.8,en-US;q=0.7",
@@ -61,7 +61,7 @@ def get_links(blogs, already_in_raw):
                     "x-newrelic-id": "VgICV1dVCBADUFNSBwkCX1M=",
                     "x-requested-with": "XMLHttpRequest",
                     "cookie": "_cb=C3VoU5C2o5cYmR7OP; _fbp=fb.1.1659107102835.468199250; cookie-agreed=2; _hjSessionUser_1768366=eyJpZCI6IjE4NTJkNmM1LWMzOTAtNTYzMC04NjlhLTBiM2JiMDg2ZWExNCIsImNyZWF0ZWQiOjE2NTkxMDcxMDI5NjIsImV4aXN0aW5nIjp0cnVlfQ==; _gid=GA1.2.209379316.1662914268; _dc_gtm_UA-3596942-1=1; _hjIncludedInSessionSample=0; _hjSession_1768366=eyJpZCI6ImFjZGE5Yzg4LTZmOGUtNDgyMS1hMGUyLTlhYjZhMWFlYzY0NSIsImNyZWF0ZWQiOjE2NjM0MjkwNDQ2NjEsImluU2FtcGxlIjpmYWxzZX0=; _hjIncludedInPageviewSample=1; _hjAbsoluteSessionInProgress=0; _chartbeat2=.1659107102163.1663429085053.0000000001111111.BcT2dxDfWnWz3nKVgC548VDBX34c_.1; _cb_svref=null; amp_2be1ae=kqJ8mfrNA3YX_SXS4cIY6F...1gd61hps7.1gd61j1ta.7p.0.7p; _ga=GA1.2.15477803.1659107103; sailthru_pageviews=8; sailthru_content=38036bc56a0e62c97d78e56b829b03904b3f625bda7c6096eccc30092fa2a9ff173f3875ca7f38c6c3fc17feeee42b23df2442e3d1a933f6b952ca5eccdc1154dd06b0fd15773ca12b66bfa036f37b9f299173f1f5c606c2cf70a699da89e6cbdcb04b9a318e83ab02959872f45748133135555ea904fe10f803730c02d66922dd2d2502ddcc667a3fa7b723dbe2287168556862283f56ebbd17761a7aa365b2cff8804e237f6cdf3a085c14986cbc99143f360e12472f43f8144249faf8a54923dc42ffd45adfe5ee0f41ffe597f6164806c15541b01bd1e67e3f8f13a1e41afa681288dcbd8752070f837e74a0a6df5293a3eac0d13f9847e43c5e382fc2d0; sailthru_visitor=586ad90b-1cf6-45ce-adf9-9e8108a1bd32; _ga_24W5E70YKH=GS1.1.1663429044.32.1.1663429093.0.0.0; _ga_RBVKHZHP8E=GS1.1.1663429044.32.1.1663429093.11.0.0; _chartbeat5=524|4485|%2Fblog%2Fasia-unbound|https%3A%2F%2Fwww.cfr.org%2Fblog%2Fasia-unbound%3F_wrapper_format%3Dhtml%26topics%3DAll%26regions%3DAll%26page%3D1|lqlc9ByeQe4C6Ovp0WcITUC89s4y||c|BxNaC6Baul6wB72DEUCKWW08DlTVRR|cfr.org|",
-                    "Referer": "https://www.cfr.org/blog/asia-unbound",
+                    f"Referer": base_page,
                     "Referrer-Policy": "strict-origin-when-cross-origin"
                     }
             post_data = F"view_name=blog_posts&view_display_id=block_latest_blog_posts&view_args=4%2F242728&view_path=%2Ftaxonomy%2Fterm%2F4&view_base_path=&view_dom_id=84192d5f83580205b355b4b8a16202628b8a30cebb844d05713c404973ebe7b1&pager_element=0&_wrapper_format=html&topics=All&regions=All&page={page_num}&_drupal_ajax=1&ajax_page_state%5Btheme%5D=cfr_theme&ajax_page_state%5Btheme_token%5D=&ajax_page_state%5Blibraries%5D=cfr_chartbeat%2Fcfr-chartbeat%2Ccfr_homepage_sections%2Fadvanced_autocomplete%2Ccfr_sailthru%2Fjavascript_api_library%2Ccfr_theme%2Falert%2Ccfr_theme%2Fbg-image-switch%2Ccfr_theme%2Fblog-series%2Ccfr_theme%2Fbuttons%2Ccfr_theme%2Ffacebook-pixel%2Ccfr_theme%2Fglobal-legacy%2Ccfr_theme%2Fheader%2Ccfr_theme%2Fheader-contextual%2Ccfr_theme%2Fnewsletter-form%2Ccfr_theme%2Fnewsletter-form-common%2Ccfr_theme%2Fright-rail%2Ccore%2Fdrupal.ajax%2Ccore%2Fdrupal.autocomplete%2Ccore%2Finternal.jquery.form%2Cdatalayer%2Fbehaviors%2Cdatalayer%2Fhelper%2Cdd_datalayer_tools%2Famplitude%2Cdd_datalayer_tools%2FcustomDimensionUserCategory%2Cdd_datalayer_tools%2FdatalayerItems%2Cdd_datalayer_tools%2FpodcastFinish%2Cdd_datalayer_tools%2FpodcastStart%2Cdd_datalayer_tools%2FvideoFinish%2Cdd_datalayer_tools%2FvideoStart%2Ceu_cookie_compliance%2Feu_cookie_compliance_default%2Clazy%2Flazy%2Csearch_autocomplete%2Ftheme.minimal.css%2Csystem%2Fbase%2Cviews%2Fviews.ajax%2Cviews%2Fviews.module%2Cviews_infinite_scroll%2Fviews-infinite-scroll"
@@ -69,9 +69,11 @@ def get_links(blogs, already_in_raw):
             response = json.loads(post_request.content.decode())
             # get_dagster_logger().info(headers)
             # get_dagster_logger().info('\t'.join([x for x in already_in_raw]))
-            data = response.json()[1]['data']
+            data = response[1]['data']
+
+
             find_links = list(set([x.strip() for x in re.findall(r'(?<=<a href=")(.*)(?=" class="card-article-large__link">)',data)]))
-            # get_dagster_logger().info('\t'.join([x for x in find_links]))
+            get_dagster_logger().info('\t'.join([x for x in find_links]))
             if already_in_raw != None:
                 shorter = [x.split('/')[-1] for x in find_links]
                 shorted_filtered = [x for x in shorter if x not in already_in_raw]
@@ -85,7 +87,7 @@ def get_links(blogs, already_in_raw):
             
             for link in find_links_filtered:
                 if link not in result:
-                    result.append(link)
+                    result.append(link.strip())
             page_num += 1
             get_dagster_logger().info(page_num)
             get_dagster_logger().info('\t'.join([x for x in result]))
