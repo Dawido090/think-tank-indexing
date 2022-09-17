@@ -81,3 +81,4 @@ def transform_raw_data_job():
 # take data from raw-data minio
 # take only files which are not in transformed
 # apply pseudo transformation, to be filled later
+
