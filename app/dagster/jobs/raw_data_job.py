@@ -14,7 +14,7 @@ import io
 def get_blogs():
     # think about multi blogs loop
     blogs = ['https://www.cfr.org/blog/asia-unbound',
-            'https://www.cfr.org/blog/africa-transition'
+            # 'https://www.cfr.org/blog/africa-transition'
     ]
     get_dagster_logger().info(blogs)
     return blogs
@@ -37,9 +37,10 @@ def get_already_in_raw():
 
 @op
 def get_links(blogs, already_in_raw):
-    result = []
     # check creds in future
+    blog_handler = {}
     for blog in blogs:
+        result = []
         base_page = blog
         # implement stop of program after certain time if isn't able to find new data in future
         flag = True
@@ -60,7 +61,7 @@ def get_links(blogs, already_in_raw):
                     "tracestate": "66686@nr=0-1-2456160-345675803-679ede98b0032142----1663429102481",
                     "x-newrelic-id": "VgICV1dVCBADUFNSBwkCX1M=",
                     "x-requested-with": "XMLHttpRequest",
-                    "cookie": "_cb=C3VoU5C2o5cYmR7OP; _fbp=fb.1.1659107102835.468199250; cookie-agreed=2; _hjSessionUser_1768366=eyJpZCI6IjE4NTJkNmM1LWMzOTAtNTYzMC04NjlhLTBiM2JiMDg2ZWExNCIsImNyZWF0ZWQiOjE2NTkxMDcxMDI5NjIsImV4aXN0aW5nIjp0cnVlfQ==; _gid=GA1.2.209379316.1662914268; _dc_gtm_UA-3596942-1=1; _hjIncludedInSessionSample=0; _hjSession_1768366=eyJpZCI6ImFjZGE5Yzg4LTZmOGUtNDgyMS1hMGUyLTlhYjZhMWFlYzY0NSIsImNyZWF0ZWQiOjE2NjM0MjkwNDQ2NjEsImluU2FtcGxlIjpmYWxzZX0=; _hjIncludedInPageviewSample=1; _hjAbsoluteSessionInProgress=0; _chartbeat2=.1659107102163.1663429085053.0000000001111111.BcT2dxDfWnWz3nKVgC548VDBX34c_.1; _cb_svref=null; amp_2be1ae=kqJ8mfrNA3YX_SXS4cIY6F...1gd61hps7.1gd61j1ta.7p.0.7p; _ga=GA1.2.15477803.1659107103; sailthru_pageviews=8; sailthru_content=38036bc56a0e62c97d78e56b829b03904b3f625bda7c6096eccc30092fa2a9ff173f3875ca7f38c6c3fc17feeee42b23df2442e3d1a933f6b952ca5eccdc1154dd06b0fd15773ca12b66bfa036f37b9f299173f1f5c606c2cf70a699da89e6cbdcb04b9a318e83ab02959872f45748133135555ea904fe10f803730c02d66922dd2d2502ddcc667a3fa7b723dbe2287168556862283f56ebbd17761a7aa365b2cff8804e237f6cdf3a085c14986cbc99143f360e12472f43f8144249faf8a54923dc42ffd45adfe5ee0f41ffe597f6164806c15541b01bd1e67e3f8f13a1e41afa681288dcbd8752070f837e74a0a6df5293a3eac0d13f9847e43c5e382fc2d0; sailthru_visitor=586ad90b-1cf6-45ce-adf9-9e8108a1bd32; _ga_24W5E70YKH=GS1.1.1663429044.32.1.1663429093.0.0.0; _ga_RBVKHZHP8E=GS1.1.1663429044.32.1.1663429093.11.0.0; _chartbeat5=524|4485|%2Fblog%2Fasia-unbound|https%3A%2F%2Fwww.cfr.org%2Fblog%2Fasia-unbound%3F_wrapper_format%3Dhtml%26topics%3DAll%26regions%3DAll%26page%3D1|lqlc9ByeQe4C6Ovp0WcITUC89s4y||c|BxNaC6Baul6wB72DEUCKWW08DlTVRR|cfr.org|",
+                    "cookie": FR"_cb=C3VoU5C2o5cYmR7OP; _fbp=fb.1.1659107102835.468199250; cookie-agreed=2; _hjSessionUser_1768366=eyJpZCI6IjE4NTJkNmM1LWMzOTAtNTYzMC04NjlhLTBiM2JiMDg2ZWExNCIsImNyZWF0ZWQiOjE2NTkxMDcxMDI5NjIsImV4aXN0aW5nIjp0cnVlfQ==; _gid=GA1.2.209379316.1662914268; _dc_gtm_UA-3596942-1=1; _hjIncludedInSessionSample=0; _hjSession_1768366=eyJpZCI6ImFjZGE5Yzg4LTZmOGUtNDgyMS1hMGUyLTlhYjZhMWFlYzY0NSIsImNyZWF0ZWQiOjE2NjM0MjkwNDQ2NjEsImluU2FtcGxlIjpmYWxzZX0=; _hjIncludedInPageviewSample=1; _hjAbsoluteSessionInProgress=0; _chartbeat2=.1659107102163.1663429085053.0000000001111111.BcT2dxDfWnWz3nKVgC548VDBX34c_.1; _cb_svref=null; amp_2be1ae=kqJ8mfrNA3YX_SXS4cIY6F...1gd61hps7.1gd61j1ta.7p.0.7p; _ga=GA1.2.15477803.1659107103; sailthru_pageviews=8; sailthru_content=38036bc56a0e62c97d78e56b829b03904b3f625bda7c6096eccc30092fa2a9ff173f3875ca7f38c6c3fc17feeee42b23df2442e3d1a933f6b952ca5eccdc1154dd06b0fd15773ca12b66bfa036f37b9f299173f1f5c606c2cf70a699da89e6cbdcb04b9a318e83ab02959872f45748133135555ea904fe10f803730c02d66922dd2d2502ddcc667a3fa7b723dbe2287168556862283f56ebbd17761a7aa365b2cff8804e237f6cdf3a085c14986cbc99143f360e12472f43f8144249faf8a54923dc42ffd45adfe5ee0f41ffe597f6164806c15541b01bd1e67e3f8f13a1e41afa681288dcbd8752070f837e74a0a6df5293a3eac0d13f9847e43c5e382fc2d0; sailthru_visitor=586ad90b-1cf6-45ce-adf9-9e8108a1bd32; _ga_24W5E70YKH=GS1.1.1663429044.32.1.1663429093.0.0.0; _ga_RBVKHZHP8E=GS1.1.1663429044.32.1.1663429093.11.0.0; _chartbeat5=524|4485|%2Fblog%2F{blog.split('/')[-1]}|https%3A%2F%2Fwww.cfr.org%2Fblog%2F{blog.split('/')[-1]}%3F_wrapper_format%3Dhtml%26topics%3DAll%26regions%3DAll%26page%3D1|lqlc9ByeQe4C6Ovp0WcITUC89s4y||c|BxNaC6Baul6wB72DEUCKWW08DlTVRR|cfr.org|",
                     f"Referer": base_page,
                     "Referrer-Policy": "strict-origin-when-cross-origin"
                     }
@@ -88,50 +89,53 @@ def get_links(blogs, already_in_raw):
             for link in find_links_filtered:
                 if link not in result:
                     result.append(link.strip())
+            blog_handler[blog] = result
             page_num += 1
             get_dagster_logger().info(page_num)
             get_dagster_logger().info('\t'.join([x for x in result]))
     # get_dagster_logger().info('\t'.join([x for x in result]))
-    return result
+    return blog_handler
 
 
 @op
-def get_data(list_of_links):
+def get_data(blog_handler):
     # collect raw data from portal
     # think about date zones
     result = []
     session = HTMLSession()
-    for article_link in list_of_links:
-        body_content = []
-        ses = session.get(article_link)
-        ses_html = ses.html
-        body = ses_html.xpath('/html/body/div[1]/div/div/main/div/article/div/div/div[1]/div')
-        body_p = body[0].find('p')
-        subtitle = ses_html.xpath('/html/body/div[1]/div/div/main/div/article/div/header/div/div[2]')[0].text
-        tag_blogs = [
-            x.split('/')[-1].replace('-',' ') for x in
-            ses_html.xpath('/html/body/div[1]/div/div/main/div/article/div/header/div/div[1]/section')[0].links]
-        try:        
-            post_date = ses_html.xpath('/html/body/div[1]/div/div/main/div/article/div/header/div/div[4]/div[2]')[0].text
-            post_date = post_date.split('(')[0].strip()
-            post_date = datetime.datetime.strptime(post_date,'%B %d, %Y %H:%M %p' )
-        except (ValueError,IndexError) as error:
-            get_dagster_logger().info(f'The {error} heppend at {article_link}')
-            post_date = None
+    for blog in blog_handler.items():
+        for article_link in blog[1]:
+            body_content = []
+            ses = session.get(article_link)
+            ses_html = ses.html
+            body = ses_html.xpath('/html/body/div[1]/div/div/main/div/article/div/div/div[1]/div')
+            body_p = body[0].find('p')
+            subtitle = ses_html.xpath('/html/body/div[1]/div/div/main/div/article/div/header/div/div[2]')[0].text
+            tag_blogs = [
+                x.split('/')[-1].replace('-',' ') for x in
+                ses_html.xpath('/html/body/div[1]/div/div/main/div/article/div/header/div/div[1]/section')[0].links]
+            try:        
+                post_date = ses_html.xpath('/html/body/div[1]/div/div/main/div/article/div/header/div/div[4]/div[2]')[0].text
+                post_date = post_date.split('(')[0].strip()
+                post_date = datetime.datetime.strptime(post_date,'%B %d, %Y %H:%M %p' )
+            except (ValueError,IndexError) as error:
+                get_dagster_logger().info(f'The {error} heppend at {article_link}')
+                post_date = None
 
-        data = {
-            'link':article_link,
-            'subtitle':subtitle,
-            'blog':tag_blogs,
-            'post date':post_date,
-            'body':''
-            }
-        for i in body_p:
-            if 'class' not in str(i) and i != '':
-                body_content.append(i.text)
-        data['body'] = body_content
-        result.append(data)
-    get_dagster_logger().info(f'Collection len:{len(result)}')
+            data = {
+                'blog':blog[0],
+                'link':article_link,
+                'subtitle':subtitle,
+                'blog':tag_blogs,
+                'post date':post_date,
+                'body':''
+                }
+            for i in body_p:
+                if 'class' not in str(i) and i != '':
+                    body_content.append(i.text)
+            data['body'] = body_content
+            result.append(data)
+        get_dagster_logger().info(f'Collection len:{len(result)}')
     # parsed_articles = '\t'.join([x for x in result])
     # get_dagster_logger().info(f'Parsed articles:{parsed_articles}')
     return result
@@ -177,8 +181,8 @@ def to_minio(data):
 def collect_articles_job():
     already_in_raw_data = get_already_in_raw()
     blogs = get_blogs()
-    links = get_links(blogs,already_in_raw_data)
-    data = get_data(links)
+    blog_handler = get_links(blogs,already_in_raw_data)
+    data = get_data(blog_handler)
     to_minio(data)
 
 
