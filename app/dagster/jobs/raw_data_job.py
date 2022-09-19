@@ -45,7 +45,7 @@ def get_links(blogs, already_in_raw):
         # implement stop of program after certain time if isn't able to find new data in future
         flag = True
         page_num = 1
-        while (len(result) <= 30) and (flag == True):
+        while (len(result) <= 10) and (flag == True):
             headers ={
                     "accept": "application/json, text/javascript, */*; q=0.01",
                     "accept-language": "en-GB,en;q=0.9,pl;q=0.8,en-US;q=0.7",
@@ -119,15 +119,15 @@ def get_data(blog_handler):
                 post_date = post_date.split('(')[0].strip()
                 post_date = datetime.datetime.strptime(post_date,'%B %d, %Y %H:%M %p' )
             except (ValueError,IndexError) as error:
+                post_date = ''
                 get_dagster_logger().info(f'The {error} heppend at {article_link}')
-                post_date = None
 
             data = {
                 'blog':blog[0],
                 'link':article_link,
                 'subtitle':subtitle,
                 'blog':tag_blogs,
-                'post date':post_date,
+                'post date':post_date.strftime("%d-%m-%Y %H:%M:%S") if post_date != '' else '',
                 'body':''
                 }
             for i in body_p:
@@ -172,7 +172,7 @@ def to_minio(data):
         for count_of_files_added, file in enumerate(data):
             file_name = 'raw-data/'+ file['link'].split('/')[-1] +'.json'
             # client.fput_object('articles',object_name = 'raw-data/' + file,file_path=file)
-            client.put_object('articles',file_name, data = io.BytesIO(str(file).encode()),length=len(str(file).encode()))
+            client.put_object('articles',file_name, data = io.BytesIO((json.dumps(file)).encode("UTF-8")),length=len((json.dumps(file)).encode("UTF-8")), content_type="application/json")
         get_dagster_logger().info(f'{count_of_files_added +1} files added to raw-data')
         # add mechanism to check minio content to avoid replication
         
